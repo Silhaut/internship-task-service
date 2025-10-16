@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  telegramId String   @unique
+  firstName  String
+  lastName   String
+  phone      String?
+  tests      Test[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Test {
+  id        String       @id @default(uuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id])
+  answers   TestAnswer[]
+  result    Result?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@map("tests")
+}
+
+model Question {
+  id            String         @id @default(uuid())
+  text          String
+  answerOptions AnswerOption[]
+  TestAnswer    TestAnswer[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@map("questions")
+}
+
+model AnswerOption {
+  id         String               @id @default(uuid())
+  questionId String
+  question   Question             @relation(fields: [questionId], references: [id])
+  text       String
+  weights    AnswerOptionWeight[]
+  TestAnswer TestAnswer[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("answer_options")
+}
+
+model AnswerOptionWeight {
+  id             String @id @default(uuid())
+  answerOptionId String
+  professionId   String
+  weight         Int
+
+  answerOption AnswerOption @relation(fields: [answerOptionId], references: [id])
+  profession   Profession   @relation(fields: [professionId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([answerOptionId, professionId])
+  @@map("answer_option_weights")
+}
+
+model Profession {
+  id          String               @id @default(uuid())
+  name        String               @unique
+  description String
+  weights     AnswerOptionWeight[]
+  Result      Result[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("professions")
+}
+
+model TestAnswer {
+  id         String       @id @default(uuid())
+  testId     String
+  questionId String
+  answerId   String
+  test       Test         @relation(fields: [testId], references: [id])
+  question   Question     @relation(fields: [questionId], references: [id])
+  answer     AnswerOption @relation(fields: [answerId], references: [id])
+
+  @@map("test_answers")
+}
+
+model Result {
+  id           String     @id @default(uuid())
+  testId       String     @unique
+  professionId String
+  test         Test       @relation(fields: [testId], references: [id])
+  profession   Profession @relation(fields: [professionId], references: [id])
+  scoreDetails Json
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@map("test_results")
+}
