@@ -25,6 +25,7 @@ model User {
   firstName  String
   lastName   String
   phone      String   @unique
+  password   String
   tests      Test[]
   role       Role     @default(USER)
   createdAt  DateTime @default(now())
