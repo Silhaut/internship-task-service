@@ -27,6 +27,11 @@ export class TestUpdate {
     await this.startTest(ctx);
   }
 
+  @Command('stats')
+  async onStatsCommand(@Ctx() ctx: MyContext) {
+    await this.onStats(ctx);
+  }
+
   private async startTest(ctx: MyContext) {
     const tgId = String(ctx.from?.id);
     const user = await this.prisma.user.findUnique({ where: { telegramId: tgId } });
@@ -99,6 +104,52 @@ export class TestUpdate {
     await this.sendNextQuestion(ctx);
   }
 
+  @Action('my_stats')
+  async onStats(@Ctx() ctx: MyContext) {
+    await ctx.answerCbQuery();
+
+    const tgId = String(ctx.from?.id);
+    const user = await this.prisma.user.findUnique({
+      where: { telegramId: tgId },
+      include: {
+        tests: {
+          include: {
+            result: { include: { profession: true } },
+          },
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+    });
+
+    if (!user || user.tests.length === 0) {
+      await ctx.reply('Пока нет данных о пройденных тестах 🕐');
+      return;
+    }
+
+    let message = '📊 *История твоих тестов:*\n\n';
+
+    for (const [i, t] of user.tests.entries()) {
+      const date = new Date(t.createdAt).toLocaleString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      const prof = t.result?.profession?.name ?? '—';
+      const score = t.result?.scoreDetails
+        ? Object.entries(t.result.scoreDetails)
+          .map(([k, v]) => `${k}: ${v}`)
+          .join(', ')
+        : 'нет данных';
+
+      message += `🧾 Тест #${i + 1} — ${date}\n📌 Профессия: *${prof}*\n💯 Баллы: ${score}\n\n`;
+    }
+
+    await ctx.reply(message, { parse_mode: 'Markdown' });
+  }
+
+
   private async finishTest(ctx: MyContext) {
     const testId = ctx.session.testId!;
     const rows = await this.prisma.testAnswer.findMany({
@@ -130,6 +181,12 @@ export class TestUpdate {
       `🎉 Тест завершён!\nТебе больше всего подходит: *${bestName}* (${bestScore} баллов).`,
       { parse_mode: 'Markdown' },
     );
+
+    await ctx.reply('Хочешь посмотреть свою статистику?', {
+      reply_markup: {
+        inline_keyboard: [[{ text: '📊 Моя статистика', callback_data: 'my_stats' }]],
+      },
+    });
 
     ctx.session = {};
   }
