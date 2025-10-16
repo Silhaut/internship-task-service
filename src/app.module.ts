@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { PrismaModule } from './prisma/prisma.module';
 import * as LocalSession from 'telegraf-session-local';
+import { TestModule } from './test/test.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import * as LocalSession from 'telegraf-session-local';
       inject: [ConfigService],
     }),
     PrismaModule,
+    TestModule,
   ],
   controllers: [AppController],
   providers: [AppService],
