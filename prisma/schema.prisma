@@ -24,7 +24,7 @@ model User {
   telegramId String   @unique
   firstName  String
   lastName   String
-  phone      String?
+  phone      String   @unique
   tests      Test[]
   role       Role     @default(USER)
   createdAt  DateTime @default(now())
