@@ -1,18 +1,36 @@
-import { Update, Ctx, Action, Hears, Command } from 'nestjs-telegraf';
+import { Action, Command, Ctx, Update } from 'nestjs-telegraf';
 import { Context } from 'telegraf';
-import { PrismaService } from '../prisma/prisma.service';
+import { UsersService } from '../users/users.service';
+import { TestService } from './test.service';
+import { QuestionsService } from '../questions/questions.service';
+import { TestAnswersService } from '../test-answers/test-answers.service';
+import { ProfessionsService } from '../professions/professions.service';
+import { TestResultsService } from '../test-results/test-results.service';
+import { CreateTestResultDto } from '../data/dto/create-test-result.dto';
+import { CreateTestAnswerDto } from '../data/dto/create-test-answer.dto';
 
 interface MyContext extends Context {
   session: {
     testId?: string;
     currentQuestionIndex?: number;
-    questions?: { id: string; text: string; options: { id: string; text: string }[] }[];
+    questions?: {
+      id: string;
+      text: string;
+      options: { id: string; text: string }[];
+    }[];
   };
 }
 
 @Update()
 export class TestUpdate {
-  constructor(private prisma: PrismaService) {
+  constructor(
+    private usersService: UsersService,
+    private testsService: TestService,
+    private questionService: QuestionsService,
+    private testAnswersService: TestAnswersService,
+    private professionsService: ProfessionsService,
+    private testResultsService: TestResultsService,
+  ) {
     console.log('✅ TestUpdate подключен');
   }
 
@@ -34,19 +52,16 @@ export class TestUpdate {
 
   private async startTest(ctx: MyContext) {
     const tgId = String(ctx.from?.id);
-    const user = await this.prisma.user.findUnique({ where: { telegramId: tgId } });
+    const user = await this.usersService.findByTelegramId(tgId);
     if (!user) {
       await ctx.reply('Сначала зарегистрируйся через /start 📱');
       return;
     }
 
     await ctx.reply('Тест начинается! 🧠');
-    const test = await this.prisma.test.create({ data: { userId: user.id } });
+    const test = await this.testsService.create(user.id);
 
-    const questions = await this.prisma.question.findMany({
-      include: { answerOptions: true },
-      orderBy: { createdAt: 'asc' },
-    });
+    const questions = await this.questionService.findMany();
     if (!questions.length) {
       await ctx.reply('❗ Вопросы ещё не добавлены администратором.');
       return;
@@ -54,10 +69,10 @@ export class TestUpdate {
 
     ctx.session.testId = test.id;
     ctx.session.currentQuestionIndex = 0;
-    ctx.session.questions = questions.map(q => ({
+    ctx.session.questions = questions.map((q) => ({
       id: q.id,
       text: q.text,
-      options: q.answerOptions.map(o => ({ id: o.id, text: o.text })),
+      options: q.answerOptions.map((o) => ({ id: o.id, text: o.text })),
     }));
 
     await this.sendNextQuestion(ctx);
@@ -74,7 +89,9 @@ export class TestUpdate {
     const q = list[idx];
     await ctx.reply(`❓ ${q.text}`, {
       reply_markup: {
-        inline_keyboard: q.options.map(o => [{ text: o.text, callback_data: `answer_${o.id}` }]),
+        inline_keyboard: q.options.map((o) => [
+          { text: o.text, callback_data: `answer_${o.id}` },
+        ]),
       },
     });
   }
@@ -91,13 +108,13 @@ export class TestUpdate {
       return;
     }
 
-    await this.prisma.testAnswer.create({
-      data: {
-        testId: ctx.session.testId!,
-        questionId: question.id,
-        answerId,
-      },
-    });
+    const testAnswer: CreateTestAnswerDto = {
+      testId: ctx.session.testId!,
+      questionId: question.id,
+      answerId,
+    };
+
+    await this.testAnswersService.create(testAnswer);
 
     ctx.session.currentQuestionIndex = idx + 1;
     await ctx.answerCbQuery('✅ Ответ принят!');
@@ -109,17 +126,7 @@ export class TestUpdate {
     await ctx.answerCbQuery();
 
     const tgId = String(ctx.from?.id);
-    const user = await this.prisma.user.findUnique({
-      where: { telegramId: tgId },
-      include: {
-        tests: {
-          include: {
-            result: { include: { profession: true } },
-          },
-          orderBy: { createdAt: 'desc' },
-        },
-      },
-    });
+    const user = await this.usersService.findByTelegramIdWithTestsAndResults(tgId);
 
     if (!user || user.tests.length === 0) {
       await ctx.reply('Пока нет данных о пройденных тестах 🕐');
@@ -139,8 +146,8 @@ export class TestUpdate {
       const prof = t.result?.profession?.name ?? '—';
       const score = t.result?.scoreDetails
         ? Object.entries(t.result.scoreDetails)
-          .map(([k, v]) => `${k}: ${v}`)
-          .join(', ')
+            .map(([k, v]) => `${k}: ${v}`)
+            .join(', ')
         : 'нет данных';
 
       message += `🧾 Тест #${i + 1} — ${date}\n📌 Профессия: *${prof}*\n💯 Баллы: ${score}\n\n`;
@@ -149,13 +156,9 @@ export class TestUpdate {
     await ctx.reply(message, { parse_mode: 'Markdown' });
   }
 
-
   private async finishTest(ctx: MyContext) {
     const testId = ctx.session.testId!;
-    const rows = await this.prisma.testAnswer.findMany({
-      where: { testId },
-      include: { answer: { include: { weights: { include: { profession: true } } } } },
-    });
+    const rows = await this.testAnswersService.findMany(testId);
 
     const scores: Record<string, number> = {};
     for (const r of rows) {
@@ -171,11 +174,15 @@ export class TestUpdate {
     }
 
     const [bestName, bestScore] = top;
-    const bestProf = await this.prisma.profession.findUnique({ where: { name: bestName } });
+    const bestProf = await this.professionsService.findByName(bestName);
 
-    await this.prisma.result.create({
-      data: { testId, professionId: bestProf!.id, scoreDetails: scores },
-    });
+    const testResults: CreateTestResultDto = {
+      testId,
+      professionId: bestProf!.id,
+      scoreDetails: scores,
+    };
+
+    await this.testResultsService.create(testResults);
 
     await ctx.reply(
       `🎉 Тест завершён!\nТебе больше всего подходит: *${bestName}* (${bestScore} баллов).`,
@@ -184,7 +191,9 @@ export class TestUpdate {
 
     await ctx.reply('Хочешь посмотреть свою статистику?', {
       reply_markup: {
-        inline_keyboard: [[{ text: '📊 Моя статистика', callback_data: 'my_stats' }]],
+        inline_keyboard: [
+          [{ text: '📊 Моя статистика', callback_data: 'my_stats' }],
+        ],
       },
     });
 

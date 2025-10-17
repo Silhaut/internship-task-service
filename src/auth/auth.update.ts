@@ -1,6 +1,7 @@
 import { Ctx, Hears, On, Start, Update } from 'nestjs-telegraf';
 import { Context } from 'telegraf';
-import { PrismaService } from '../prisma/prisma.service';
+import { CreateUserDto } from '../data/dto/create-user.dto';
+import { UsersService } from '../users/users.service';
 
 interface MyContext extends Context {
   session: {
@@ -13,7 +14,7 @@ interface MyContext extends Context {
 
 @Update()
 export class AuthUpdate {
-  constructor(private prisma: PrismaService) {}
+  constructor(private usersService: UsersService) {}
 
   @Start()
   async onStart(@Ctx() ctx: MyContext) {
@@ -62,20 +63,18 @@ export class AuthUpdate {
 
     const { firstName, lastName } = ctx.session;
 
-    let user = await this.prisma.user.findUnique({
-      where: { telegramId: String(userId) },
-    });
+    let user = await this.usersService.findByTelegramId(String(userId));
+
+    const createUser: CreateUserDto = {
+      telegramId: String(userId),
+      firstName: firstName ?? 'Не указано',
+      lastName: lastName ?? 'Не указано',
+      phone,
+      role: 'USER',
+    };
 
     if (!user) {
-      await this.prisma.user.create({
-        data: {
-          telegramId: String(userId),
-          firstName: firstName ?? 'Не указано',
-          lastName: lastName ?? 'Не указано',
-          phone,
-          role: 'USER',
-        },
-      });
+      await this.usersService.create(createUser);
       await ctx.reply(`✅ Спасибо, ${firstName}! Ты успешно зарегистрирован.`);
     } else {
       await ctx.reply(`👋 С возвращением, ${firstName || user.firstName}!`);

@@ -8,6 +8,11 @@ import { TelegrafModule } from 'nestjs-telegraf';
 import { PrismaModule } from './prisma/prisma.module';
 import * as LocalSession from 'telegraf-session-local';
 import { TestModule } from './test/test.module';
+import { MenuModule } from './menu/menu.module';
+import { QuestionsModule } from './questions/questions.module';
+import { TestAnswersModule } from './test-answers/test-answers.module';
+import { ProfessionsModule } from './professions/professions.module';
+import { TestResultsModule } from './test-results/test-results.module';
 
 @Module({
   imports: [
@@ -25,6 +30,11 @@ import { TestModule } from './test/test.module';
     }),
     PrismaModule,
     TestModule,
+    MenuModule,
+    QuestionsModule,
+    TestAnswersModule,
+    ProfessionsModule,
+    TestResultsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
