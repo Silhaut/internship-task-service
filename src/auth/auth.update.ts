@@ -18,6 +18,29 @@ export class AuthUpdate {
 
   @Start()
   async onStart(@Ctx() ctx: MyContext) {
+    console.log('Start Context: ', ctx);
+
+    const tgId = String(ctx.from?.id);
+
+    const user = await this.usersService.findByTelegramId(tgId);
+
+    if (user) {
+      await ctx.reply(`👋 С возвращением, ${user.firstName}!`, {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: '🧠 Пройти тест', callback_data: 'start_test' },
+              { text: '📊 Моя статистика', callback_data: 'my_stats' },
+            ],
+            // [
+            //   { text: 'ℹ️ Помощь', callback_data: 'help' },
+            // ],
+          ],
+        },
+      });
+      return;
+    }
+
     ctx.session = {};
     ctx.session.step = 'firstName';
     await ctx.reply('👋 Привет! Напиши своё имя:');

@@ -17,7 +17,7 @@ import { TestResultsModule } from './test-results/test-results.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true
+      isGlobal: true,
     }),
     AuthModule,
     UsersModule,

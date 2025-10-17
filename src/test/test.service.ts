@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MyContext } from '../data/dto/my-context.interface';
 import { UsersService } from '../users/users.service';
@@ -87,8 +87,8 @@ export class TestService {
     const testAnswer: CreateTestAnswerDto = {
       testId: ctx.session.testId!,
       questionId: question.id,
-      answerId
-    }
+      answerId,
+    };
 
     await this.testAnswersService.create(testAnswer);
 
@@ -116,8 +116,8 @@ export class TestService {
     const testResults: CreateTestResultDto = {
       testId,
       professionId: bestProf!.id,
-      scoreDetails: scores
-    }
+      scoreDetails: scores,
+    };
 
     await this.testResultsService.create(testResults);
 
@@ -131,7 +131,7 @@ export class TestService {
         inline_keyboard: [
           [
             { text: '📊 Моя статистика', callback_data: 'my_stats' },
-            { text: '🏠 Главное меню', callback_data: 'main_menu' },
+            { text: '🏠 Главное меню', callback_data: 'open_menu' },
           ],
         ],
       },
@@ -142,7 +142,8 @@ export class TestService {
 
   async showStats(ctx: MyContext) {
     const tgId = String(ctx.from?.id);
-    const user = await this.usersService.findByTelegramIdWithTestsAndResults(tgId);
+    const user =
+      await this.usersService.findByTelegramIdWithTestsAndResults(tgId);
 
     if (!user?.tests?.length) {
       await ctx.reply('Пока нет данных о пройденных тестах 🕐');
@@ -155,8 +156,8 @@ export class TestService {
       const prof = t.result?.profession?.name ?? '—';
       const score = t.result?.scoreDetails
         ? Object.entries(t.result.scoreDetails)
-          .map(([k, v]) => `${k}: ${v}`)
-          .join(', ')
+            .map(([k, v]) => `${k}: ${v}`)
+            .join(', ')
         : 'нет данных';
       msg += `🧾 Тест #${i + 1} — ${date}\n📌 Профессия: *${prof}*\n💯 Баллы: ${score}\n\n`;
     });
