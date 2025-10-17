@@ -1,4 +1,4 @@
-import { Update, Ctx, On, Start, Hears } from 'nestjs-telegraf';
+import { Ctx, Hears, On, Start, Update } from 'nestjs-telegraf';
 import { Context } from 'telegraf';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -46,7 +46,9 @@ export class AuthUpdate {
         break;
 
       default:
-        await ctx.reply('Я тебя не понял 🤔. Напиши /start чтобы начать заново.');
+        await ctx.reply(
+          'Я тебя не понял 🤔. Напиши /start чтобы начать заново.',
+        );
     }
   }
 
@@ -74,11 +76,21 @@ export class AuthUpdate {
           role: 'USER',
         },
       });
-      console.log(user)
       await ctx.reply(`✅ Спасибо, ${firstName}! Ты успешно зарегистрирован.`);
     } else {
       await ctx.reply(`👋 С возвращением, ${firstName || user.firstName}!`);
     }
+
+    await ctx.reply('Выбери, что хочешь сделать 👇', {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: '🧠 Пройти тест', callback_data: 'start_test' },
+            { text: '📊 Статистика', callback_data: 'my_stats' },
+          ],
+        ],
+      },
+    });
 
     ctx.session = {};
   }
