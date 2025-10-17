@@ -1,41 +1,32 @@
 import { Action, Command, Ctx, Update } from 'nestjs-telegraf';
-import { Context } from 'telegraf';
-import { PrismaService } from '../prisma/prisma.service';
-
-interface MyContext extends Context {}
+import { TestService } from '../test/test.service';
+import { MyContext } from '../data/dto/my-context.interface';
 
 @Update()
 export class MenuUpdate {
-  constructor(
-    private prisma: PrismaService,
-  ) {}
+  constructor(private testService: TestService) {}
 
   @Command('menu')
-  async onMenuCommand(@Ctx() ctx: MyContext) {
+  async onMenu(@Ctx() ctx: MyContext) {
     await this.showMenu(ctx);
   }
 
   @Action('main_menu')
-  async onMainMenuAction(@Ctx() ctx: MyContext) {
+  async onMainMenu(@Ctx() ctx: MyContext) {
     await ctx.answerCbQuery();
     await this.showMenu(ctx);
   }
 
   @Action('start_test')
-  async onStartTestAction(@Ctx() ctx: MyContext) {
+  async onStartTest(@Ctx() ctx: MyContext) {
     await ctx.answerCbQuery();
-    await ctx.reply('🧠 Запускаю тест...', { reply_markup: { remove_keyboard: true } });
-
-    // 👉 Здесь можно просто вызвать твой TestUpdate.startTest()
-    // Например, через PrismaService или event emitter, если вынесешь логику в сервис.
+    await this.testService.startTest(ctx);
   }
 
   @Action('my_stats')
-  async onStatsAction(@Ctx() ctx: MyContext) {
+  async onMyStats(@Ctx() ctx: MyContext) {
     await ctx.answerCbQuery();
-    await ctx.reply('📊 Загружаю твою статистику...');
-
-    // 👉 Можно вызвать TestUpdate.showStats() или просто вставить сюда вызов Prisma.
+    await this.testService.showStats(ctx);
   }
 
   @Action('help')
@@ -43,14 +34,14 @@ export class MenuUpdate {
     await ctx.answerCbQuery();
     await ctx.reply(
       `ℹ️ *Помощь*\n\n` +
-      `🧠 /test — пройти тест\n` +
-      `📊 /stats — посмотреть результаты\n` +
-      `🏠 /menu — открыть главное меню`,
+        `🧠 /test — пройти тест\n` +
+        `📊 /stats — посмотреть результаты\n` +
+        `🏠 /menu — открыть главное меню`,
       { parse_mode: 'Markdown' },
     );
   }
 
-  private async showMenu(ctx: MyContext) {
+  async showMenu(ctx: MyContext) {
     await ctx.reply('📋 Главное меню', {
       reply_markup: {
         inline_keyboard: [
@@ -59,52 +50,8 @@ export class MenuUpdate {
             { text: '📊 Моя статистика', callback_data: 'my_stats' },
           ],
           [{ text: 'ℹ️ Помощь', callback_data: 'help' }],
-        ]
-      }
-    })
-  }
-
-  private async onStats(@Ctx() ctx: MyContext) {
-    await ctx.answerCbQuery();
-
-    const tgId = String(ctx.from?.id);
-    const user = await this.prisma.user.findUnique({
-      where: { telegramId: tgId },
-      include: {
-        tests: {
-          include: {
-            result: { include: { profession: true } },
-          },
-          orderBy: { createdAt: 'desc' },
-        },
+        ],
       },
     });
-
-    if (!user || user.tests.length === 0) {
-      await ctx.reply('Пока нет данных о пройденных тестах 🕐');
-      return;
-    }
-
-    let message = '📊 *История твоих тестов:*\n\n';
-
-    for (const [i, t] of user.tests.entries()) {
-      const date = new Date(t.createdAt).toLocaleString('ru-RU', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-      const prof = t.result?.profession?.name ?? '—';
-      const score = t.result?.scoreDetails
-        ? Object.entries(t.result.scoreDetails)
-          .map(([k, v]) => `${k}: ${v}`)
-          .join(', ')
-        : 'нет данных';
-
-      message += `🧾 Тест #${i + 1} — ${date}\n📌 Профессия: *${prof}*\n💯 Баллы: ${score}\n\n`;
-    }
-
-    await ctx.reply(message, { parse_mode: 'Markdown' });
   }
 }
