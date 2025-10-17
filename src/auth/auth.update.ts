@@ -81,9 +81,14 @@ export class AuthUpdate {
       await ctx.reply(`👋 С возвращением, ${firstName || user.firstName}!`);
     }
 
-    await ctx.reply('Теперь давай пройдем небольшой тест 💡', {
+    await ctx.reply('Выбери, что хочешь сделать 👇', {
       reply_markup: {
-        inline_keyboard: [[{ text: 'Начать тест', callback_data: 'start_test' }]],
+        inline_keyboard: [
+          [
+            { text: '🧠 Пройти тест', callback_data: 'start_test' },
+            { text: '📊 Статистика', callback_data: 'my_stats' },
+          ],
+        ],
       },
     });
 
