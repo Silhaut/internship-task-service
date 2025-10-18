@@ -1,10 +1,16 @@
 import 'express';
-import { JwtPayloadDto } from '../data/dto/jwt-payload.dto';
+import { Role } from '@prisma/client';
 
-type User = Pick<JwtPayloadDto, 'user'>
+declare global {
+  namespace Express {
+    interface User {
+      id: string;
+      username: string;
+      role: Role;
+    }
 
-declare module 'express' {
-  export interface Request {
-    user?: User;
+    interface Request {
+      user?: User;
+    }
   }
 }
