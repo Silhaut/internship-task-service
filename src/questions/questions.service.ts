@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { QuestionModel } from '../data/models/question.model';
+import { QuestionModel } from '../common/data/models/question.model';
 
 type Question = {
   answerOptions: Option[]

@@ -1,6 +1,6 @@
 import { Ctx, Hears, On, Start, Update } from 'nestjs-telegraf';
 import { Context } from 'telegraf';
-import { CreateUserDto } from '../data/dto/create-user.dto';
+import { CreateUserDto } from '../common/data/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt'
 

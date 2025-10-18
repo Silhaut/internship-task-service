@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { MyContext } from '../data/dto/my-context.interface';
+import { MyContext } from '../common/data/dto/my-context.interface';
 import { UsersService } from '../users/users.service';
 import { QuestionsService } from '../questions/questions.service';
 import { TestAnswersService } from '../test-answers/test-answers.service';
-import { CreateTestAnswerDto } from '../data/dto/create-test-answer.dto';
+import { CreateTestAnswerDto } from '../common/data/dto/create-test-answer.dto';
 import { ProfessionsService } from '../professions/professions.service';
 import { TestResultsService } from '../test-results/test-results.service';
-import { CreateTestResultDto } from '../data/dto/create-test-result.dto';
+import { CreateTestResultDto } from '../common/data/dto/create-test-result.dto';
 
 @Injectable()
 export class TestService {
