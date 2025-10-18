@@ -7,13 +7,16 @@ import { UserDto } from '../common/data/dto/user.dto';
 import { ApiPagedResponse } from '../common/decorators/api-paged-response.decorator';
 import { UsersQueryDto } from '../common/data/dto/users-query.dto';
 
-@Controller('users')
+@Roles('ADMIN')
+@UseGuards(AuthGuard)
+@Controller({
+  version: '1',
+  path: 'users'
+})
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  @Roles('ADMIN')
-  @UseGuards(AuthGuard)
   @ApiExtraModels(UsersQueryDto)
   @ApiPagedResponse(UserDto)
   async getUsers(@Query() query: UsersQueryDto) {

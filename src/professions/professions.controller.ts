@@ -7,7 +7,12 @@ import { ApiExtraModels } from '@nestjs/swagger';
 import { ProfessionDto } from '../common/data/dto/profession.dto';
 import { ApiPagedResponse } from '../common/decorators/api-paged-response.decorator';
 
-@Controller('professions')
+@Roles('ADMIN')
+@UseGuards(AuthGuard)
+@Controller({
+  version: '1',
+  path: 'professions'
+})
 export class ProfessionsController {
   constructor(private professionsService: ProfessionsService) {}
 
