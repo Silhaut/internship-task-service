@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -20,7 +21,7 @@ import { RolesGuard } from '../common/guards/roles/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 
-@Roles(Role.ADMIN)
+@Roles(Role.USER)
 @UseGuards(AuthGuard, RolesGuard)
 @Controller({
   version: '1',
@@ -47,6 +48,16 @@ export class ProfessionsController {
   @ApiResponse({ type: ProfessionDto })
   async getProfession(@Param('id') id: string) {
     return this.professionsService.findOne(id);
+  }
+
+  @Put(':id')
+  @ApiBody({ type: CreateProfessionDto })
+  @ApiResponse({ type: IdDto })
+  async update(
+    @Param('id') id: string,
+    @Body() createProfessionDto: CreateProfessionDto,
+  ) {
+    return this.professionsService.update(id, createProfessionDto);
   }
 
   @Delete(':id')
