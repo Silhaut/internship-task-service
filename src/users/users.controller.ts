@@ -6,12 +6,14 @@ import { ApiExtraModels } from '@nestjs/swagger';
 import { UserDto } from '../common/data/dto/user.dto';
 import { ApiPagedResponse } from '../common/decorators/api-paged-response.decorator';
 import { UsersQueryDto } from '../common/data/dto/users-query.dto';
+import { RolesGuard } from '../common/guards/roles/roles.guard';
+import { Role } from '@prisma/client';
 
-@Roles('ADMIN')
-@UseGuards(AuthGuard)
+@Roles(Role.ADMIN)
+@UseGuards(AuthGuard, RolesGuard)
 @Controller({
   version: '1',
-  path: 'users'
+  path: 'users',
 })
 export class UsersController {
   constructor(private usersService: UsersService) {}

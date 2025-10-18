@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { QueryParamsDto } from '../common/data/dto/query-params.dto';
 import { paginateAndMap } from '../common/utils/paginate-and-map.util';
@@ -39,9 +39,23 @@ export class ProfessionsService {
     )
   }
 
+  async findOne(id: string): Promise<ProfessionDto> {
+    const profession = await this.prisma.profession.findUnique({ where: { id } });
+
+    if (!profession) {
+      throw new NotFoundException(`Profession with id ${id} not found`);
+    }
+
+    return profession;
+  }
+
   async findByName(name: string) {
     const profession = await this.prisma.profession.findUnique({ where: { name: name } });
 
     return profession;
+  }
+
+  async delete(id: string) {
+    await this.prisma.profession.delete({ where: { id } });
   }
 }
