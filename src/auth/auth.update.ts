@@ -2,12 +2,14 @@ import { Ctx, Hears, On, Start, Update } from 'nestjs-telegraf';
 import { Context } from 'telegraf';
 import { CreateUserDto } from '../data/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
+import * as bcrypt from 'bcrypt'
 
 interface MyContext extends Context {
   session: {
     step?: string;
     firstName?: string;
     lastName?: string;
+    password?: string;
     phone?: string;
   };
 }
@@ -48,6 +50,7 @@ export class AuthUpdate {
 
   @Hears(/.*/)
   async onMessage(@Ctx() ctx: MyContext) {
+    console.log('Hears: ', ctx);
     const text = ctx.message?.['text'];
     if (!text) return;
 
@@ -60,6 +63,12 @@ export class AuthUpdate {
 
       case 'lastName':
         ctx.session.lastName = text;
+        ctx.session.step = 'password';
+        await ctx.reply('Введите пароль для будущей аутентификации:');
+        break;
+
+      case 'password':
+        ctx.session.password = text;
         ctx.session.step = 'phone';
         await ctx.reply('📱 Теперь отправь свой номер телефона', {
           reply_markup: {
@@ -78,20 +87,26 @@ export class AuthUpdate {
 
   @On('contact')
   async onContact(@Ctx() ctx: MyContext) {
+    console.log('Contact: ', ctx);
     const userId = ctx.from?.id;
     if (!userId) return;
 
     const contact = (ctx.message as any)?.contact;
     const phone = contact?.phone_number;
+    const username = contact?.first_name
 
-    const { firstName, lastName } = ctx.session;
+    const { firstName, lastName, password } = ctx.session;
 
-    let user = await this.usersService.findByTelegramId(String(userId));
+    const hash = await bcrypt.hash(password, 10);
+
+    const user = await this.usersService.findByTelegramId(String(userId));
 
     const createUser: CreateUserDto = {
       telegramId: String(userId),
+      username,
       firstName: firstName ?? 'Не указано',
       lastName: lastName ?? 'Не указано',
+      password: hash,
       phone,
       role: 'USER',
     };

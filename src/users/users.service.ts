@@ -12,20 +12,23 @@ export class UsersService {
     await this.prisma.user.create({
       data: {
         telegramId: dto.telegramId,
+        username: dto.username,
         firstName: dto.firstName,
         lastName: dto.lastName,
+        password: dto.password,
         phone: dto.phone,
         role: dto.role,
       }
     })
   }
 
+  async findByUsername(username: string) {
+    const user = await this.prisma.user.findUnique({ where: { username: username } });
+    return user;
+  }
+
   async findByTelegramId(telegramId: string) {
     const user = await this.prisma.user.findUnique({ where: { telegramId: telegramId } });
-    if (!user) {
-      throw new NotFoundException('User not found!');
-    }
-
     return user;
   }
 
