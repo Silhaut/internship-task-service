@@ -34,7 +34,7 @@ export class TestResultsController {
 
   @Get()
   @ApiPagedResponse(TestResultDto)
-  @ApiExtraModels(QueryParamsDto)
+  @ApiExtraModels(TestResultQueryDto)
   findAll(@Query() query: TestResultQueryDto) {
     return this.testResultsService.findAll(query);
   }
@@ -43,7 +43,7 @@ export class TestResultsController {
   @Version('2')
   @ApiPagedResponse(TestResultWithTestDto)
   @ApiExtraModels(QueryParamsDto)
-  findAllWithTestDto(@Query() query: IdDto) {
+  findAllWithTestDto(@Query() query: QueryParamsDto) {
     return this.testResultsService.findAllWithTestAndUserDto(query);
   }
   
