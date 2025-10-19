@@ -6,7 +6,7 @@ import {
   Post,
   Put,
   Query,
-  UseGuards,
+  UseGuards, Version,
 } from '@nestjs/common';
 import { AnswerOptionsService } from './answer-options.service';
 import { RolesGuard } from '../common/guards/roles/roles.guard';
@@ -16,7 +16,7 @@ import { ApiBody, ApiExtraModels, ApiResponse } from '@nestjs/swagger';
 import { IdDto } from '../common/data/dto/id.dto';
 import { CreateAnswerOptionDto } from '../common/data/dto/create-answer-option.dto';
 import { AuthGuard } from '../common/guards/auth/auth.guard';
-import { AnswerOptionDto } from '../common/data/dto/answer-option.dto';
+import { AnswerOptionDto, AnswerOptionWithQuestionDto } from '../common/data/dto/answer-option.dto';
 import { AnswerOptionsQueryDto } from '../common/data/dto/answer-options-query.dto';
 import { ApiPagedResponse } from '../common/decorators/api-paged-response.decorator';
 import { UpdateAnswerOptionTextDto } from '../common/data/dto/update-answer-option-text.dto';
@@ -42,6 +42,14 @@ export class AnswerOptionsController {
   @ApiPagedResponse(AnswerOptionDto)
   findAll(@Query() query: AnswerOptionsQueryDto) {
     return this.answerOptionsService.findAll(query);
+  }
+
+  @Version('2')
+  @Get()
+  @ApiExtraModels(AnswerOptionsQueryDto)
+  @ApiPagedResponse(AnswerOptionWithQuestionDto)
+  findAllWithQuestionDto(@Query() query: AnswerOptionsQueryDto) {
+    return this.answerOptionsService.findAllWithQuestionDto(query);
   }
 
   @Get(':id')

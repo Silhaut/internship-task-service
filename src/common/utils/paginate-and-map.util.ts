@@ -5,14 +5,19 @@ export async function paginateAndMap<T, D>(
   modelKey: string,
   query: QueryParamsDto,
   mapFn: (entity: T) => D,
+  include?: Record<string, boolean | object>,
 ) {
   const { buildPrismaQuery } = await import('./prisma-query.util');
   const prismaQuery = buildPrismaQuery(query);
 
+  const queryWithRelations = include
+    ? { ...prismaQuery, include }
+    : prismaQuery;
+
   const model = prisma[modelKey];
 
   const [data, totalSize] = await prisma.$transaction([
-    model.findMany(prismaQuery),
+    model.findMany(queryWithRelations),
     model.count({ where: prismaQuery.where }),
   ]);
 

@@ -5,7 +5,7 @@ import { IdDto } from '../common/data/dto/id.dto';
 import { paginateAndMap } from '../common/utils/paginate-and-map.util';
 import { QueryParamsDto } from '../common/data/dto/query-params.dto';
 import { AnswerOptionModel } from '../common/data/models/answer-option.model';
-import { AnswerOptionDto } from '../common/data/dto/answer-option.dto';
+import { AnswerOptionDto, AnswerOptionWithQuestionDto } from '../common/data/dto/answer-option.dto';
 import { UpdateAnswerOptionTextDto } from '../common/data/dto/update-answer-option-text.dto';
 
 @Injectable()
@@ -24,6 +24,27 @@ export class AnswerOptionsService {
         createdAt: option.createdAt,
         updatedAt: option.updatedAt,
       })
+    )
+  }
+
+  async findAllWithQuestionDto(query: QueryParamsDto) {
+    return paginateAndMap(
+      this.prisma,
+      'answerOption',
+      query,
+      (option: AnswerOptionWithQuestionDto) => ({
+        id: option.id,
+        question: {
+          id: option.question.id,
+          text: option.question.text,
+        },
+        text: option.text,
+        createdAt: option.createdAt,
+        updatedAt: option.updatedAt,
+      }),
+      {
+        question: true,
+      }
     )
   }
 
