@@ -13,6 +13,7 @@ import { QuestionsModule } from './questions/questions.module';
 import { TestAnswersModule } from './test-answers/test-answers.module';
 import { ProfessionsModule } from './professions/professions.module';
 import { TestResultsModule } from './test-results/test-results.module';
+import { AnswerOptionsModule } from './answer-options/answer-options.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { TestResultsModule } from './test-results/test-results.module';
     TestAnswersModule,
     ProfessionsModule,
     TestResultsModule,
+    AnswerOptionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
