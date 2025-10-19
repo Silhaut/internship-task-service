@@ -56,23 +56,22 @@ export class ProfessionsService {
   }
 
   async update(id: string, dto: CreateProfessionDto): Promise<IdDto> {
-    const existingProfession = await this.prisma.profession.findUnique({
-      where: { id },
-    });
+    try {
+      const updated = await this.prisma.profession.update({
+        where: { id },
+        data: {
+          ...(dto.name && { name: dto.name }),
+          ...(dto.description && { description: dto.description }),
+        }
+      })
 
-    if (!existingProfession) {
-      throw new NotFoundException(`Profession with id "${id}" not found`);
+      return { id: updated.id }
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Profession with id "${id}" not found`);
+      }
+      throw error;
     }
-
-    const updated = await this.prisma.profession.update({
-      where: { id },
-      data: {
-        name: dto.name,
-        description: dto.description,
-      },
-    });
-
-    return { id: updated.id };
   }
 
   async delete(id: string) {
