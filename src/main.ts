@@ -19,6 +19,15 @@ async function bootstrap() {
     .setTitle('Internship task example')
     .setDescription('This is RESTful APIs documentation for Internship task')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Введите JWT токен в формате: Bearer <your_token>',
+      },
+      'access-token',
+    )
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);

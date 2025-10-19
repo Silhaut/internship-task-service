@@ -14,7 +14,7 @@ import { Role } from '@prisma/client';
 import { AuthGuard } from '../common/guards/auth/auth.guard';
 import { RolesGuard } from '../common/guards/roles/roles.guard';
 import { IdDto } from '../common/data/dto/id.dto';
-import { ApiBody, ApiExtraModels, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiExtraModels, ApiResponse } from '@nestjs/swagger';
 import { QuestionsService } from './questions.service';
 import { CreateQuestionDto } from '../common/data/dto/create-question.dto';
 import { ApiPagedResponse } from '../common/decorators/api-paged-response.decorator';
@@ -24,6 +24,7 @@ import { QuestionWithAnswerOptionsDto } from '../common/data/dto/question-with-a
 
 @Roles(Role.ADMIN)
 @UseGuards(AuthGuard, RolesGuard)
+@ApiBearerAuth('access-token')
 @Controller({
   version: '1',
   path: 'questions',

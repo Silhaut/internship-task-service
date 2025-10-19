@@ -12,7 +12,7 @@ import {
 import { ProfessionsService } from './professions.service';
 import { AuthGuard } from '../common/guards/auth/auth.guard';
 import { ProfessionsQueryDto } from '../common/data/dto/professions-query.dto';
-import { ApiBody, ApiExtraModels, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiExtraModels, ApiResponse } from '@nestjs/swagger';
 import { ProfessionDto } from '../common/data/dto/profession.dto';
 import { ApiPagedResponse } from '../common/decorators/api-paged-response.decorator';
 import { CreateProfessionDto } from '../common/data/dto/create-profession.dto';
@@ -23,6 +23,7 @@ import { Role } from '@prisma/client';
 
 @Roles(Role.ADMIN)
 @UseGuards(AuthGuard, RolesGuard)
+@ApiBearerAuth('access-token')
 @Controller({
   version: '1',
   path: 'professions',
