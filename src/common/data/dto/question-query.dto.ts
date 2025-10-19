@@ -1,15 +1,12 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { QueryParamsDto } from './query-params.dto';
 
-export class ProfessionsQueryDto extends QueryParamsDto {
+export class QuestionQueryDto extends QueryParamsDto {
   @ApiPropertyOptional({ example: "80f86549-5b7d-4275-ae38-3168c7c22d38" })
   id?: string;
 
   @ApiPropertyOptional()
-  name?: string;
-
-  @ApiPropertyOptional()
-  description?: string;
+  text?: string;
 
   @ApiPropertyOptional()
   createdAt?: string;

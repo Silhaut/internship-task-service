@@ -21,7 +21,7 @@ import { RolesGuard } from '../common/guards/roles/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 
-@Roles(Role.USER)
+@Roles(Role.ADMIN)
 @UseGuards(AuthGuard, RolesGuard)
 @Controller({
   version: '1',
@@ -33,27 +33,27 @@ export class ProfessionsController {
   @Post()
   @ApiBody({ type: CreateProfessionDto })
   @ApiResponse({ type: IdDto })
-  async create(@Body() createProfessionDto: CreateProfessionDto) {
+  create(@Body() createProfessionDto: CreateProfessionDto) {
     return this.professionsService.create(createProfessionDto);
   }
 
   @Get()
   @ApiExtraModels(ProfessionsQueryDto)
   @ApiPagedResponse(ProfessionDto)
-  async getProfessions(@Query() query: ProfessionsQueryDto) {
+  getProfessions(@Query() query: ProfessionsQueryDto) {
     return this.professionsService.findAll(query);
   }
 
   @Get(':id')
   @ApiResponse({ type: ProfessionDto })
-  async getProfession(@Param('id') id: string) {
+  getProfession(@Param('id') id: string) {
     return this.professionsService.findOne(id);
   }
 
   @Put(':id')
   @ApiBody({ type: CreateProfessionDto })
   @ApiResponse({ type: IdDto })
-  async update(
+  update(
     @Param('id') id: string,
     @Body() createProfessionDto: CreateProfessionDto,
   ) {
@@ -61,7 +61,7 @@ export class ProfessionsController {
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string) {
+  delete(@Param('id') id: string) {
     return this.professionsService.delete(id);
   }
 }
