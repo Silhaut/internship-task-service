@@ -51,6 +51,25 @@ export class AnswerOptionsWeightsService {
     return optionWeight;
   }
 
+  async findOneWithAnswerOptionAdnProfession(id: string) {
+    const optionWeight = await this.prisma.answerOptionWeight.findUnique({
+      where: { id },
+      include: {
+        answerOption: {
+          include: {
+            question: true
+          }
+        },
+        profession: true,
+      }
+    });
+    if (!optionWeight)
+      throw new NotFoundException(
+        `Answer Option Weight with id ${id} not found`,
+      );
+    return optionWeight;
+  }
+
   async update(id: string, dto: UpdateOptionWeightDto): Promise<IdDto> {
     try {
       const updated = await this.prisma.answerOptionWeight.update({

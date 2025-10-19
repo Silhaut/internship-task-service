@@ -213,4 +213,15 @@ export class TestService {
     if (!test) throw new NotFoundException(`Test with id ${id} not found`);
     return test;
   }
+
+  async findOneWithUser(id: string) {
+    const test = await this.prisma.test.findUnique({
+      where: { id },
+      include: {
+        user: true,
+      }
+    });
+    if (!test) throw new NotFoundException(`Test with id ${id} not found`);
+    return test;
+  }
 }

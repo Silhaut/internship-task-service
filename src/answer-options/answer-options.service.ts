@@ -59,9 +59,20 @@ export class AnswerOptionsService {
     return { id: answerOption.id }
   }
 
-  async findOne(answerOptionId: string) {
-    const answerOption = await this.prisma.answerOption.findUnique({ where: { id: answerOptionId } });
-    if (!answerOption) throw new NotFoundException(`Answer option with id ${answerOptionId} not found`);
+  async findOne(id: string) {
+    const answerOption = await this.prisma.answerOption.findUnique({ where: { id } });
+    if (!answerOption) throw new NotFoundException(`Answer option with id ${id} not found`);
+    return answerOption;
+  }
+
+  async findOneWithQuestionDto(id: string) {
+    const answerOption = await this.prisma.answerOption.findUnique({
+      where: { id },
+      include: {
+        question: true,
+      }
+    });
+    if (!answerOption) throw new NotFoundException(`Answer option with id ${id} not found`);
     return answerOption;
   }
 

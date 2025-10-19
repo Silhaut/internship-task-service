@@ -60,6 +60,13 @@ export class AnswerOptionsController {
     return this.answerOptionsService.findOne(id);
   }
 
+  @Get(':id')
+  @Version('2')
+  @ApiResponse({ type: AnswerOptionWithQuestionDto })
+  findOneWithQuestionDto(@Param('id') id: string) {
+    return this.answerOptionsService.findOneWithQuestionDto(id);
+  }
+
   @Put(':id/text')
   @ApiBody({ type: UpdateAnswerOptionTextDto })
   @ApiResponse({ type: IdDto })

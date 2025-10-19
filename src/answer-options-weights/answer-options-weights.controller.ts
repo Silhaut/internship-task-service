@@ -6,7 +6,7 @@ import {
   Post,
   Put,
   Query,
-  UseGuards,
+  UseGuards, Version,
 } from '@nestjs/common';
 import { AnswerOptionsWeightsService } from './answer-options-weights.service';
 import { Role } from '@prisma/client';
@@ -18,7 +18,10 @@ import { CreateAnswerOptionWeightDto } from '../common/data/dto/create-answer-op
 import { IdDto } from '../common/data/dto/id.dto';
 import { AnswerOptionWeightQueryDto } from '../common/data/dto/answer-option-weight-query.dto';
 import { ApiPagedResponse } from '../common/decorators/api-paged-response.decorator';
-import { AnswerOptionWeightDto } from '../common/data/dto/answer-option-weight.dto';
+import {
+  AnswerOptionWeightDto,
+  AnswerOptionWeightWithAnswerOptionAndProfessionDto,
+} from '../common/data/dto/answer-option-weight.dto';
 import { UpdateOptionWeightDto } from '../common/data/dto/update-option-weight.dto';
 
 @ApiTags('Answer Option Weights')
@@ -52,6 +55,13 @@ export class AnswerOptionsWeightsController {
   @ApiResponse({ type: AnswerOptionWeightDto })
   findOne(@Param('id') id: string) {
     return this.answerOptionsWeightsService.findOne(id);
+  }
+
+  @Get(':id')
+  @Version('2')
+  @ApiResponse({ type: AnswerOptionWeightWithAnswerOptionAndProfessionDto })
+  findOneWithAnswerOptionAdnProfession(@Param('id') id: string) {
+    return this.answerOptionsWeightsService.findOneWithAnswerOptionAdnProfession(id);
   }
 
   @Put(':id')

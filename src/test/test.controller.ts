@@ -46,4 +46,11 @@ export class TestController {
   findOne(@Param('id') id: string) {
     return this.testService.findOne(id);
   }
+
+  @Get(':id')
+  @Version('2')
+  @ApiResponse({ type: TestWithUserDto })
+  findOneWithUser(@Param('id') id: string) {
+    return this.testService.findOneWithUser(id);
+  }
 }
