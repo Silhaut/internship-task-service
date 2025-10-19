@@ -21,7 +21,7 @@ import { AnswerOptionsQueryDto } from '../common/data/dto/answer-options-query.d
 import { ApiPagedResponse } from '../common/decorators/api-paged-response.decorator';
 import { UpdateAnswerOptionTextDto } from '../common/data/dto/update-answer-option-text.dto';
 
-@Roles(Role.USER)
+@Roles(Role.ADMIN)
 @UseGuards(AuthGuard, RolesGuard)
 @Controller({
   version: '1',

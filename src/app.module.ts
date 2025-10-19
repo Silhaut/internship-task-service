@@ -14,6 +14,7 @@ import { TestAnswersModule } from './test-answers/test-answers.module';
 import { ProfessionsModule } from './professions/professions.module';
 import { TestResultsModule } from './test-results/test-results.module';
 import { AnswerOptionsModule } from './answer-options/answer-options.module';
+import { AnswerOptionsWeightsModule } from './answer-options-weights/answer-options-weights.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { AnswerOptionsModule } from './answer-options/answer-options.module';
     ProfessionsModule,
     TestResultsModule,
     AnswerOptionsModule,
+    AnswerOptionsWeightsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
