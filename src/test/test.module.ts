@@ -6,6 +6,7 @@ import { TestAnswersModule } from '../test-answers/test-answers.module';
 import { ProfessionsModule } from '../professions/professions.module';
 import { TestResultsModule } from '../test-results/test-results.module';
 import { TestUpdate } from './test.update';
+import { TestController } from './test.controller';
 
 @Module({
   imports: [
@@ -17,5 +18,6 @@ import { TestUpdate } from './test.update';
   ],
   providers: [TestService, TestUpdate],
   exports: [TestService],
+  controllers: [TestController],
 })
 export class TestModule {}

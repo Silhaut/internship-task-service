@@ -13,7 +13,7 @@ import { Role } from '@prisma/client';
 import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles/roles.guard';
 import { AuthGuard } from '../common/guards/auth/auth.guard';
-import { ApiBearerAuth, ApiBody, ApiExtraModels, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiExtraModels, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateAnswerOptionWeightDto } from '../common/data/dto/create-answer-option-weight.dto';
 import { IdDto } from '../common/data/dto/id.dto';
 import { AnswerOptionWeightQueryDto } from '../common/data/dto/answer-option-weight-query.dto';
@@ -21,6 +21,7 @@ import { ApiPagedResponse } from '../common/decorators/api-paged-response.decora
 import { AnswerOptionWeightDto } from '../common/data/dto/answer-option-weight.dto';
 import { UpdateOptionWeightDto } from '../common/data/dto/update-option-weight.dto';
 
+@ApiTags('Answer Option Weights')
 @Roles(Role.ADMIN)
 @UseGuards(AuthGuard, RolesGuard)
 @ApiBearerAuth('access-token')

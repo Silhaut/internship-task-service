@@ -12,7 +12,7 @@ import { AnswerOptionsService } from './answer-options.service';
 import { RolesGuard } from '../common/guards/roles/roles.guard';
 import { Role } from '@prisma/client';
 import { Roles } from '../common/decorators/roles.decorator';
-import { ApiBearerAuth, ApiBody, ApiExtraModels, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiExtraModels, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IdDto } from '../common/data/dto/id.dto';
 import { CreateAnswerOptionDto } from '../common/data/dto/create-answer-option.dto';
 import { AuthGuard } from '../common/guards/auth/auth.guard';
@@ -21,6 +21,7 @@ import { AnswerOptionsQueryDto } from '../common/data/dto/answer-options-query.d
 import { ApiPagedResponse } from '../common/decorators/api-paged-response.decorator';
 import { UpdateAnswerOptionTextDto } from '../common/data/dto/update-answer-option-text.dto';
 
+@ApiTags('Answer Options')
 @Roles(Role.ADMIN)
 @UseGuards(AuthGuard, RolesGuard)
 @ApiBearerAuth('access-token')
