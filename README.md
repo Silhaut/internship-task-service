@@ -1,98 +1,157 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🧠 Платформа карьерного тестирования (NestJS + Telegram Bot)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Полноценный backend-проект для Telegram-бота, определяющего подходящую профессию по результатам теста.  
+Построен на **NestJS**, **Prisma** и **PostgreSQL**.  
+Пользователи регистрируются через Telegram, проходят тест и получают персонализированный результат.  
+Для администратора доступна панель управления через **Swagger UI**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 🚀 Технологический стек
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Backend-фреймворк:** NestJS (TypeScript)  
+- **ORM:** Prisma  
+- **База данных:** PostgreSQL  
+- **Авторизация:** JWT (JSON Web Token)  
+- **Документация API:** Swagger  
+- **Интеграция:** Telegram Bot API  
 
-## Project setup
+---
 
+## ⚙️ Установка и настройка
+
+### 1️⃣ Клонируйте репозиторий
 ```bash
-$ npm install
+git clone https://github.com/<ваш-username>/internship-task-service.git
+git clone git@github.com:<ваш-username>/internship-task-service.git
+cd internship-task-service
 ```
 
-## Compile and run the project
-
+### 2️⃣ Установите зависимости
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+### 3️⃣ Создайте файл `.env` в корне проекта
+Укажите свои переменные окружения:
+```env
+DATABASE_URL=postgresql://<username>:<password>@localhost:5432/test_db?schema=public
+JWT_SECRET="your_jwt_secret"
+TELEGRAM_BOT_TOKEN="your_telegram_bot_token"
 ```
 
-## Deployment
+> ⚠️ Убедитесь, что PostgreSQL запущен локально, либо измените `DATABASE_URL` на актуальный.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+---
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 🧱 Настройка Prisma
+
+Prisma используется как ORM для работы с базой данных.
+
+После клонирования проекта и установки зависимостей **необходимо применить миграции и заполнить БД начальными данными**:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Применить все существующие миграции
+npx prisma migrate deploy
+
+# (опционально) Заполнить базу начальными данными
+npx prisma db seed
+
+# (опционально) Открыть Prisma Studio для проверки данных
+npx prisma studio
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+> 💡 Если миграции уже применены или база существует, можно использовать `npx prisma db push` для синхронизации схемы без пересоздания миграций.  
+>  
+> Для локальной разработки можно использовать `npx prisma migrate reset`, чтобы полностью сбросить и пересоздать базу.
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+## 🔐 Настройка JWT
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Создайте файл `src/auth/constants.ts` и добавьте в него:
 
-## Support
+```ts
+export const jwtConstants = {
+  secret: 'jwtsecret',
+};
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+---
 
-## Stay in touch
+## 🧩 Запуск проекта
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Режим разработки
+```bash
+npm run start:dev
+```
 
-## License
+Приложение будет доступно по адресу:
+```
+http://localhost:3000
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Swagger-панель администратора:
+```
+http://localhost:3000/api
+```
+
+---
+
+## 💬 Как использовать
+
+### 👤 Регистрация через Telegram-бота
+1. Перейдите к вашему Telegram-боту.  
+2. Бот запросит:
+   - Имя  
+   - Фамилию  
+   - Номер телефона  
+3. После регистрации можно сразу пройти тест.
+
+### 🧠 Прохождение теста
+- Бот задаёт 5–10 вопросов из базы данных.  
+- Каждому ответу присваивается вес для разных профессий.  
+- После завершения бот выдаёт результат, например:
+  ```
+  ✅ Ваша профессия: Аналитик данных  
+  📖 Описание: Аналитический склад ума, внимательность к деталям и системное мышление.
+  ```
+
+### 🧾 Панель администратора (Swagger)
+Перейдите по адресу [http://localhost:3000/api](http://localhost:3000/api)  
+Здесь можно управлять:
+- Пользователями  
+- Вопросами и ответами  
+- Результатами тестов  
+- Профессиями и статистикой  
+
+---
+
+## 🧠 Алгоритм подбора профессии
+
+Для каждой профессии в таблице `professions` задано несколько весов (weights), соответствующих вариантам ответов (`answer_option_weights`).  
+После завершения теста система суммирует баллы по профессиям и выбирает ту, у которой максимальный вес.  
+Это обеспечивает адаптивный и логичный выбор результата.
+
+---
+
+## 🧱 Почему выбран NestJS + Prisma
+
+- **NestJS** — структурированный и масштабируемый фреймворк с модульной архитектурой.  
+- **Prisma** — современный ORM с типобезопасностью и удобными миграциями.  
+- **PostgreSQL** — надёжная реляционная база данных для работы со связанными таблицами.  
+- **Telegram API** — удобная платформа для взаимодействия с пользователями через бота.
+
+---
+
+## ✨ Автор
+**Жалгас Шаркен**  
+- 💼 [LinkedIn](https://linkedin.com/in/zhalgas-sharken-4760502a9)  
+
+---
+
+## 📄 Резюме
+
+Вы можете ознакомиться с моим резюме здесь:  
+👉 [Zhalgas_Sharken_CV.pdf](./Zhalgas_Sharken_CV.pdf)
+
