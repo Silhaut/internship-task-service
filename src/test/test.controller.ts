@@ -13,7 +13,7 @@ import { RolesGuard } from '../common/guards/roles/roles.guard';
 import { ApiBearerAuth, ApiExtraModels, ApiResponse } from '@nestjs/swagger';
 import { TestService } from './test.service';
 import { ApiPagedResponse } from '../common/decorators/api-paged-response.decorator';
-import { TestDto, TestWithUserDto } from '../common/data/dto/test.dto';
+import { TestDto, TestWithUserAndAnswerAndResultDto, TestWithUserDto } from '../common/data/dto/test.dto';
 import { TestQueryDto } from '../common/data/dto/test-query.dto';
 
 @Roles(Role.ADMIN)
@@ -49,8 +49,8 @@ export class TestController {
 
   @Get(':id')
   @Version('2')
-  @ApiResponse({ type: TestWithUserDto })
+  @ApiResponse({ type: TestWithUserAndAnswerAndResultDto })
   findOneWithUser(@Param('id') id: string) {
-    return this.testService.findOneWithUser(id);
+    return this.testService.findOneWithUserAndAnswersAndResult(id);
   }
 }

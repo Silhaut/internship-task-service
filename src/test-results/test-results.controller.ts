@@ -14,11 +14,9 @@ import { AuthGuard } from '../common/guards/auth/auth.guard';
 import { RolesGuard } from '../common/guards/roles/roles.guard';
 import { ApiPagedResponse } from '../common/decorators/api-paged-response.decorator';
 import {
-  TestResultDto,
-  TestResultWithTestDto,
+  TestResultDto, TestResultWithTestAndProfessionDto,
 } from '../common/data/dto/test-result.dto';
 import { TestResultQueryDto } from '../common/data/dto/test-result-query.dto';
-import { IdDto } from '../common/data/dto/id.dto';
 import { QueryParamsDto } from '../common/data/dto/query-params.dto';
 
 @ApiTags('Test Results')
@@ -41,7 +39,7 @@ export class TestResultsController {
 
   @Get()
   @Version('2')
-  @ApiPagedResponse(TestResultWithTestDto)
+  @ApiPagedResponse(TestResultWithTestAndProfessionDto)
   @ApiExtraModels(QueryParamsDto)
   findAllWithTestDto(@Query() query: QueryParamsDto) {
     return this.testResultsService.findAllWithTestAndUserDto(query);
@@ -55,7 +53,7 @@ export class TestResultsController {
 
   @Get(':id')
   @Version('2')
-  @ApiResponse({ type: TestResultWithTestDto })
+  @ApiResponse({ type: TestResultWithTestAndProfessionDto })
   findOneWithTestAndProfessionDto(@Param('id') id: string) {
     return this.testResultsService.findOneWithTestAndProfessionDto(id);
   }

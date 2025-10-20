@@ -10,7 +10,7 @@ import { TestResultsService } from '../test-results/test-results.service';
 import { CreateTestResultDto } from '../common/data/dto/create-test-result.dto';
 import { paginateAndMap } from '../common/utils/paginate-and-map.util';
 import { TestModel } from '../common/data/models/test.model';
-import { TestDto, TestWithUserDto } from '../common/data/dto/test.dto';
+import { TestDto, TestWithUserAndAnswerAndResultDto, TestWithUserDto } from '../common/data/dto/test.dto';
 import { QueryParamsDto } from '../common/data/dto/query-params.dto';
 
 @Injectable()
@@ -188,7 +188,7 @@ export class TestService {
       this.prisma,
       'test',
       query,
-      (test: TestWithUserDto) => ({
+      (test: TestWithUserAndAnswerAndResultDto) => ({
         id: test.id,
         user: {
           id: test.user.id,
@@ -199,11 +199,41 @@ export class TestService {
           phone: test.user.phone,
           role: test.user.role,
         },
+        answers: test.answers.map((answer) => ({
+          id: answer.id,
+          answer: {
+            id: answer.answer.id,
+            text: answer.answer.text,
+          },
+          question: {
+            id: answer.question.id,
+            text: answer.question.text,
+          }
+        })),
+        result: {
+          id: test.result.id,
+          profession: {
+            id: test.result.profession.id,
+            name: test.result.profession.name,
+            description: test.result.profession.description
+          }
+        },
         createdAt: test.createdAt,
         updatedAt: test.updatedAt,
       }),
       {
         user: true,
+        answers: {
+          include: {
+            answer: true,
+            question: true,
+          }
+        },
+        result: {
+          include: {
+            profession: true,
+          }
+        },
       },
     );
   }
@@ -214,11 +244,22 @@ export class TestService {
     return test;
   }
 
-  async findOneWithUser(id: string) {
+  async findOneWithUserAndAnswersAndResult(id: string) {
     const test = await this.prisma.test.findUnique({
       where: { id },
       include: {
         user: true,
+        answers: {
+          include: {
+            answer: true,
+            question: true,
+          }
+        },
+        result: {
+          include: {
+            profession: true,
+          }
+        },
       }
     });
     if (!test) throw new NotFoundException(`Test with id ${id} not found`);

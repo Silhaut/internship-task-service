@@ -11,7 +11,7 @@ export class AnswerOptionDto {
 
 export class AnswerOptionWithQuestionDto {
   @ApiProperty({ example: "80f86549-5b7d-4275-ae38-3168c7c22d38" }) id: string
-  @ApiProperty() question: QuestionDto
+  @ApiProperty({ type: () => QuestionDto }) question: QuestionDto
   @ApiProperty() text: string
   @ApiProperty() createdAt: Date
   @ApiProperty() updatedAt: Date

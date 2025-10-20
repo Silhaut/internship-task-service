@@ -95,6 +95,13 @@ export class AnswerOptionsService {
   }
 
   async delete(answerOptionId: string) {
-    await this.prisma.answerOption.delete({ where: { id: answerOptionId } });
+    await this.prisma.$transaction([
+      this.prisma.testAnswer.deleteMany({
+        where: { answerId: answerOptionId },
+      }),
+      this.prisma.answerOption.delete({
+        where: { id: answerOptionId },
+      }),
+    ]);
   }
 }

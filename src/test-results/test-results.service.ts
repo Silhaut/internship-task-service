@@ -4,7 +4,7 @@ import { CreateTestResultDto } from '../common/data/dto/create-test-result.dto';
 import { QueryParamsDto } from '../common/data/dto/query-params.dto';
 import { paginateAndMap } from '../common/utils/paginate-and-map.util';
 import { TestResultModel } from '../common/data/models/test-result.model';
-import { TestResultDto, TestResultWithTestDto } from '../common/data/dto/test-result.dto';
+import { TestResultDto, TestResultWithTestAndProfessionDto } from '../common/data/dto/test-result.dto';
 
 @Injectable()
 export class TestResultsService {
@@ -38,7 +38,7 @@ export class TestResultsService {
       this.prisma,
       'result',
       query,
-      (result: TestResultWithTestDto) => ({
+      (result: TestResultWithTestAndProfessionDto) => ({
         id: result.id,
         test: {
           id: result.test.id,
