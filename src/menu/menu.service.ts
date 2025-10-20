@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { MyContext } from '../data/dto/my-context.interface';
+import { MyContext } from '../common/data/dto/my-context.interface';
 
 @Injectable()
 export class MenuService {

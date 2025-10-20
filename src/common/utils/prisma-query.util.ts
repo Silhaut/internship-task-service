@@ -3,7 +3,7 @@ import { QueryParamsDto } from '../data/dto/query-params.dto';
 export function buildPrismaQuery(params: QueryParamsDto) {
   const {
     page = '1',
-    size = '10',
+    size = '20',
     sort,
     order = 'asc',
     ...filters

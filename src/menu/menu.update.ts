@@ -1,6 +1,6 @@
 import { Action, Command, Ctx, Hears, Update } from 'nestjs-telegraf';
 import { TestService } from '../test/test.service';
-import { MyContext } from '../data/dto/my-context.interface';
+import { MyContext } from '../common/data/dto/my-context.interface';
 import { MenuService } from './menu.service';
 
 @Update()

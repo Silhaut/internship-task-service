@@ -1,13 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { MyContext } from '../data/dto/my-context.interface';
+import { MyContext } from '../common/data/dto/my-context.interface';
 import { UsersService } from '../users/users.service';
 import { QuestionsService } from '../questions/questions.service';
 import { TestAnswersService } from '../test-answers/test-answers.service';
-import { CreateTestAnswerDto } from '../data/dto/create-test-answer.dto';
+import { CreateTestAnswerDto } from '../common/data/dto/create-test-answer.dto';
 import { ProfessionsService } from '../professions/professions.service';
 import { TestResultsService } from '../test-results/test-results.service';
-import { CreateTestResultDto } from '../data/dto/create-test-result.dto';
+import { CreateTestResultDto } from '../common/data/dto/create-test-result.dto';
+import { paginateAndMap } from '../common/utils/paginate-and-map.util';
+import { TestModel } from '../common/data/models/test.model';
+import { TestDto, TestWithUserAndAnswerAndResultDto, TestWithUserDto } from '../common/data/dto/test.dto';
+import { QueryParamsDto } from '../common/data/dto/query-params.dto';
 
 @Injectable()
 export class TestService {
@@ -163,5 +167,102 @@ export class TestService {
     });
 
     await ctx.reply(msg, { parse_mode: 'Markdown' });
+  }
+
+  async findAll(query: QueryParamsDto) {
+    return paginateAndMap<TestModel, TestDto>(
+      this.prisma,
+      'test',
+      query,
+      (test) => ({
+        id: test.id,
+        userId: test.userId,
+        createdAt: test.createdAt,
+        updatedAt: test.updatedAt,
+      }),
+    );
+  }
+
+  async findAllWithUserDto(query: QueryParamsDto) {
+    return paginateAndMap(
+      this.prisma,
+      'test',
+      query,
+      (test: TestWithUserAndAnswerAndResultDto) => ({
+        id: test.id,
+        user: {
+          id: test.user.id,
+          telegramId: test.user.telegramId,
+          firstName: test.user.firstName,
+          lastName: test.user.lastName,
+          username: test.user.username,
+          phone: test.user.phone,
+          role: test.user.role,
+        },
+        answers: test.answers.map((answer) => ({
+          id: answer.id,
+          answer: {
+            id: answer.answer.id,
+            text: answer.answer.text,
+          },
+          question: {
+            id: answer.question.id,
+            text: answer.question.text,
+          }
+        })),
+        result: {
+          id: test.result.id,
+          profession: {
+            id: test.result.profession.id,
+            name: test.result.profession.name,
+            description: test.result.profession.description
+          }
+        },
+        createdAt: test.createdAt,
+        updatedAt: test.updatedAt,
+      }),
+      {
+        user: true,
+        answers: {
+          include: {
+            answer: true,
+            question: true,
+          }
+        },
+        result: {
+          include: {
+            profession: true,
+          }
+        },
+      },
+    );
+  }
+
+  async findOne(id: string) {
+    const test = await this.prisma.test.findUnique({ where: { id: id } });
+    if (!test) throw new NotFoundException(`Test with id ${id} not found`);
+    return test;
+  }
+
+  async findOneWithUserAndAnswersAndResult(id: string) {
+    const test = await this.prisma.test.findUnique({
+      where: { id },
+      include: {
+        user: true,
+        answers: {
+          include: {
+            answer: true,
+            question: true,
+          }
+        },
+        result: {
+          include: {
+            profession: true,
+          }
+        },
+      }
+    });
+    if (!test) throw new NotFoundException(`Test with id ${id} not found`);
+    return test;
   }
 }

@@ -1,13 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserDto } from './user.dto';
+import { Role } from '@prisma/client';
 
 export class JwtPayloadDto {
   @ApiProperty()
   sub: string;
 
   @ApiProperty()
-  user: Omit<UserDto, 'id'>;
+  user: {
+    username: string;
+  };
 
-  @ApiProperty()
-  role: string;
+  @ApiProperty({ enum: Role })
+  role: Role;
 }

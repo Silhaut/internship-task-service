@@ -4,12 +4,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { LoginRequestDto } from '../data/dto/login-request.dto';
+import { LoginRequestDto } from '../common/data/dto/login-request.dto';
 import * as bcrypt from 'bcrypt';
-import { JwtPayloadDto } from '../data/dto/jwt-payload.dto';
-import { UserDto } from '../data/dto/user.dto';
+import { JwtPayloadDto } from '../common/data/dto/jwt-payload.dto';
+import { UserDto } from '../common/data/dto/user.dto';
 import { JwtService } from '@nestjs/jwt';
-import { UserModel } from '../data/models/user.model';
+import { UserModel } from '../common/data/models/user.model';
 
 @Injectable()
 export class AuthService {
