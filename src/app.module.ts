@@ -15,6 +15,7 @@ import { ProfessionsModule } from './professions/professions.module';
 import { TestResultsModule } from './test-results/test-results.module';
 import { AnswerOptionsModule } from './answer-options/answer-options.module';
 import { AnswerOptionsWeightsModule } from './answer-options-weights/answer-options-weights.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { AnswerOptionsWeightsModule } from './answer-options-weights/answer-opti
     TestResultsModule,
     AnswerOptionsModule,
     AnswerOptionsWeightsModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
