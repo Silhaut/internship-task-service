@@ -15,6 +15,11 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
 
+  app.enableCors({
+    origin: ['http://localhost:4200'],
+    credentials: true,
+  });
+
   const config = new DocumentBuilder()
     .setTitle('Internship task example')
     .setDescription('This is RESTful APIs documentation for Internship task')
