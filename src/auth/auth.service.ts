@@ -55,4 +55,22 @@ export class AuthService {
       accessToken: await this.jwtService.signAsync(payload),
     };
   }
+
+  async getMe(userId: string) {
+    const user = await this.usersService.findOne(userId);
+    if (!user) throw new NotFoundException(`User with id ${userId} not found`);
+
+    return {
+      id: user.id,
+      telegramId: user.telegramId,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
+
 }
