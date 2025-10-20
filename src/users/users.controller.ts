@@ -1,8 +1,8 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/common/guards/auth/auth.guard';
 import { UsersService } from './users.service';
 import { Roles } from '../common/decorators/roles.decorator';
-import { ApiBearerAuth, ApiExtraModels } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiExtraModels, ApiResponse } from '@nestjs/swagger';
 import { UserDto } from '../common/data/dto/user.dto';
 import { ApiPagedResponse } from '../common/decorators/api-paged-response.decorator';
 import { UsersQueryDto } from '../common/data/dto/users-query.dto';
@@ -24,5 +24,11 @@ export class UsersController {
   @ApiPagedResponse(UserDto)
   async getUsers(@Query() query: UsersQueryDto) {
     return this.usersService.findAll(query);
+  }
+
+  @Get(':id')
+  @ApiResponse({ type: UserDto })
+  findOne(@Param("id") id: string) {
+    return this.usersService.findOne(id);
   }
 }
