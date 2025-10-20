@@ -7,7 +7,10 @@ import { AdminOverviewDto } from './admin-overview.dto';
 
 @Roles(Role.ADMIN)
 @ApiBearerAuth()
-@Controller('api/v1/admin')
+@Controller({
+  version: '1',
+  path: 'admin'
+})
 export class AdminController {
   constructor(private prisma: PrismaService) {}
 
