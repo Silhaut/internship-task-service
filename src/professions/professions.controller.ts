@@ -45,6 +45,12 @@ export class ProfessionsController {
     return this.professionsService.findAll(query);
   }
 
+  @Get('list')
+  @ApiResponse({ type: [ProfessionDto] })
+  findMany() {
+    return this.professionsService.findMany();
+  }
+
   @Get(':id')
   @ApiResponse({ type: ProfessionDto })
   getProfession(@Param('id') id: string) {

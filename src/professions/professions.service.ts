@@ -77,4 +77,8 @@ export class ProfessionsService {
   async delete(id: string) {
     await this.prisma.profession.delete({ where: { id } });
   }
+
+  async findMany(): Promise<ProfessionDto[]> {
+    return this.prisma.profession.findMany()
+  }
 }
